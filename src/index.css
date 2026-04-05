@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+    --font-montserrat :  "Montserrat", sans-serif;
+    --font-urbanist : "Urbanist", sans-serif;
+}
+.input {
+  @apply w-full p-3 rounded-xl font-semibold border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.error {
+  @apply text-red-500 text-xs mt-1;
+}.glass-card {
+  @apply bg-white/5 backdrop-blur-xl
+  border border-white/10
+  rounded-2xl p-5
+  shadow-lg;
+}
+
+.reward-box {
+  @apply bg-gradient-to-br
+  bg-gradient-to-br from-indigo-500 to-purple-600
+  backdrop-blur-lg
+  rounded-xl text-center py-6
+  
+}
+
+.glass-button {
+  @apply flex items-center gap-1
+  bg-indigo-500/70 hover:bg-indigo-600
+  px-4 py-1 rounded-lg
+  transition;
+}
+
+.share-btn {
+  @apply bg-white/5 backdrop-blur-lg
+  border border-white/10
+  rounded-xl p-4
+  hover:scale-105 transition;
+}

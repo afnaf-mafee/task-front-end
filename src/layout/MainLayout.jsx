@@ -1,0 +1,33 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+import FloatingFooter from "../components/Footer/FloatingFooter";
+
+const MainLayout = () => {
+  return (
+    <div className="relative min-h-screen flex items-center justify-center
+                    bg-gradient-to-br from-[#0f0c29] via-[#1e1b4b] to-[#0f172a] overflow-hidden">
+
+      {/* Background Grid / Shapes */}
+      <div className="absolute top-[-50px] left-[-50px] w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[200px] left-[-40px] w-60 h-60 bg-cyan-400/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute bottom-[120px] right-[-30px] w-52 h-52 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+
+      {/* 📱 App Container */}
+      <main className="relative w-[360px] h-screen max-h-[720px] 
+                       rounded-[40px] overflow-hidden flex flex-col
+                       bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]
+                       shadow-[0_0_100px_rgba(99,102,241,0.15),0_40px_80px_rgba(0,0,0,0.7)]">
+
+        {/* Page Content */}
+        <div className="flex-1 overflow-y-auto pb-[100px]">
+          <Outlet />
+        </div>
+
+        {/* Floating Footer */}
+        <FloatingFooter />
+      </main>
+    </div>
+  );
+};
+
+export default MainLayout;
