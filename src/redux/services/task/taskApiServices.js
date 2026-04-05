@@ -28,6 +28,7 @@ export const taskApiServices = baseApi.injectEndpoints({
         method: "POST",
         body: { userId, amount },
       }),
+      invalidatesTags: [{ type: "Balance", id: "USER_BALANCE" }]
     })
     
 

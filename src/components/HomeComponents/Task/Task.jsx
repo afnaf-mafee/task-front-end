@@ -43,7 +43,7 @@ const Task = () => {
       // RTK Query invalidates tags automatically, so completedTasksData will refresh
        // 2️⃣ Pay user $20
       const res = await payUser({ userId: user.userId, amount: 20 }).unwrap();
-      console.log(res);
+    
 
       if (res.success) {
         console.log("🎉 $20 GET successfully!");

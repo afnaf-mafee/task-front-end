@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useCreateUserMutation } from "../../redux/services/auth/authApiService";
 import { ImSpinner2 } from "react-icons/im";
 import toast from "react-hot-toast";
+import { setCredentials } from "../../redux/features/auth/authSlice";
+import { useDispatch } from "react-redux";
+
 const Register = () => {
   const [activeTab, setActiveTab] = useState("phone");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [createUser, { isLoading }] = useCreateUserMutation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -20,20 +25,35 @@ const Register = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
-  try {
-    const res = await createUser(data).unwrap();
-    console.log("API Response:", res);
+    try {
+      const res = await createUser(data).unwrap();
+      console.log("API Response:", res);
 
-    if (res.success) {
-      toast.success(res.message || "Account Created Successfully ✅");
-    } else {
-      toast.error(res.message || "Registration Failed ❌");
+      if (res.success) {
+        const user = res?.user;
+        console.log(user);
+
+        //  save user to redux + localStorage
+        dispatch(
+          setCredentials({
+            user,
+          }),
+        );
+
+        toast.success(res.message || "Account Created Successfully 👍");
+       
+
+        setTimeout(() => {
+          navigate("/home", { replace: true });
+        }, 1500);
+      } else {
+        toast.error(res.message || "Registration Failed ❌");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+      toast.error(error?.data?.message || "Registration Failed ❌");
     }
-  } catch (error) {
-    console.log("Error:", error);
-    toast.error(error?.data?.message || "Registration Failed ❌");
-  }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200 font-urbanist">
