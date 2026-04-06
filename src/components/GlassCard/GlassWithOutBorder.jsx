@@ -1,8 +1,8 @@
-export default function GlassCard({ children, className }) {
+export default function GlassWithOutBorder({ children, className }) {
   return (
     <div
       className={`
-      bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-4 border-l-[6px] border-purple-600
+      bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-4 
         ${className || ""}
       `}
     >

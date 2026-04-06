@@ -40,3 +40,29 @@
   rounded-xl p-4
   hover:scale-105 transition;
 }
+.inputGlass {
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 backdrop-blur-md
+  border border-white/20 text-white placeholder-gray-300
+  focus:outline-none focus:ring-2 focus:ring-purple-600;
+}
+
+.error {
+  @apply text-red-400 text-xs mt-1;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes slow-zoom {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 6s ease-in-out infinite;
+}

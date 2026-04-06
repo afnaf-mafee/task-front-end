@@ -10,7 +10,7 @@ const Home = () => {
     <div className="px-5 ">
        {/* TopSection */}
        <TopSection/>
-      <GlassCard style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <GlassCard >
         <BalanceCard />
       </GlassCard>
       {/* slider */}

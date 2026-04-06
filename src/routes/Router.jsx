@@ -10,6 +10,7 @@ import CustomerServiceCenter from "../pages/Support/CustomerServiceCenter";
 
 import Account from "../pages/Account/Account";
 import PrivateRoute from "./PrivateRoute";
+import Withdraw from "../pages/Withdraw/Withdraw";
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +50,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Account />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/Withdraw",
+        element: (
+          <PrivateRoute>
+            <Withdraw />
           </PrivateRoute>
         ),
       },

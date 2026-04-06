@@ -30,7 +30,7 @@ const BalanceCard = () => {
         className="
     
         absolute inset-0
-        bg-gradient-to-r from-purple-600/20 via-indigo-600/20 to-pink-600/20
+       
         opacity-0 group-hover:opacity-100
         transition duration-500 blur-2xl
       "

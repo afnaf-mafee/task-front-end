@@ -10,6 +10,7 @@ import {
   Lock,
   Bell,
   Clock,
+  Copy,
 } from "lucide-react";
 import useAuthData from "../../hooks/useAuthData";
 import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService";
@@ -37,12 +38,28 @@ const Account = () => {
     navigate("/login"); // ✅ redirect user
   };
 
+  // copy userId to clipboard
+  const copyUserId = () => {
+    if (user?.userId) {
+      navigator.clipboard.writeText(user.userId);
+      toast.success("User ID copied!");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0f0e21] flex justify-center text-white">
       <div className="w-full max-w-md bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035] shadow-2xl rounded-[40px] relative">
         {/* Header Section */}
-        <div className="bg-gradient-to-br from-purple-700 to-indigo-900 pt-8 pb-24 px-6 rounded-b-[40px] relative">
-          <div className="flex justify-between items-center mb-6">
+        <div className="relative bg-gradient-to-br from-purple-700 to-indigo-900 pt-8 pb-24 px-6 rounded-b-[40px] overflow-hidden">
+          {/* Small box grid background */}
+          <div className="absolute inset-0 grid grid-cols-20 grid-rows-20 opacity-6 pointer-events-none">
+            {Array.from({ length: 400 }).map((_, i) => (
+              <div key={i} className="border border-white/20"></div>
+            ))}
+          </div>
+
+          {/* Header content */}
+          <div className="relative z-10 flex justify-between items-center mb-6">
             <h1 className="text-white text-xl font-bold">
               {loading ? <Skeleton className="w-32 h-6" /> : "My Profile"}
             </h1>
@@ -57,7 +74,8 @@ const Account = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* Profile info */}
+          <div className="relative z-10 flex items-center gap-4">
             <div className="relative">
               <div className="w-20 h-20 bg-pink-300 rounded-full border-2 border-white overflow-hidden shadow-inner">
                 {loading ? (
@@ -76,17 +94,32 @@ const Account = () => {
             </div>
             <div>
               <h2 className="text-white font-bold text-lg truncate w-48 tracking-tight">
-                {loading ? <Skeleton className="w-32 h-5" /> : user?.email}
+                {loading ? (
+                  <Skeleton className="w-32 h-5" />
+                ) : user?.email ? (
+                  user.email
+                ) : user?.phone ? (
+                  user.phone
+                ) : (
+                  "No contact info"
+                )}
               </h2>
-              <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 mt-1 border border-white/20 w-fit">
+
+              {/* User ID with copy */}
+              <div
+                onClick={copyUserId}
+                className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 mt-1 border border-white/20 w-fit cursor-pointer select-none"
+              >
                 {loading ? (
                   <Skeleton className="w-12 h-4" />
                 ) : (
                   <>
-                    <strong className="text-white text-xs font-semibold">
+                    <strong className="text-white text-[18px] font-semibold">
                       {user?.userId}
                     </strong>
-                    <span className="text-yellow-300 text-[10px]">🎫</span>
+                    <span className="text text-[10px]">
+                      <Copy size={16} />
+                    </span>
                   </>
                 )}
               </div>
@@ -148,7 +181,7 @@ const Account = () => {
             {/* Withdraw Button */}
             <button
               className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => toast.success("Taka Nen")}
+              onClick={() => navigate("/withdraw")}
             >
               Withdraw
             </button>
@@ -160,7 +193,7 @@ const Account = () => {
           {[
             {
               icon: <Wallet size={24} className="text-orange-400" />,
-              label: "Withdraw",
+              label: "Invoice",
               color: "bg-white/5",
             },
             {
@@ -194,6 +227,7 @@ const Account = () => {
             </div>
           ))}
         </div>
+
         {/* More Services */}
         <div className="mt-10 px-4">
           <div className="flex items-center gap-2 mb-4">

@@ -8,6 +8,7 @@ import {
   Bell,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import GlassCard from "../../components/GlassCard/GlassCard";
 const CustomerServiceCenter = () => {
   return (
     <div className="min-h-full text-white px-4 py-6 relative font-urbanist">
@@ -56,67 +57,65 @@ const CustomerServiceCenter = () => {
       </motion.div>
 
       {/* SUPPORT CARD */}
-      <div className="mt-6">
-        <div
-          className="bg-white/5 backdrop-blur-xl
-          border border-white/10
-          rounded-3xl p-5 shadow-lg"
-        >
-          <div className="flex gap-4 items-center mb-6">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full overflow-hidden border border-indigo-400">
-                <img
-                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                  alt="Support"
-                  className="w-full h-full"
-                />
-              </div>
-
-              <div
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2
-                bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full"
-              >
-                <span className="text-[10px] text-green-400 font-bold">
-                  Online
-                </span>
-              </div>
+      <GlassCard className="mt-6 relative p-5 space-y-6">
+        {/* Top Section: Avatar + Info */}
+        <div className="flex gap-4 items-center">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-full overflow-hidden border border-indigo-400">
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                alt="Support"
+                className="w-full h-full"
+              />
             </div>
 
-            <div>
-              <h2 className="font-bold text-lg leading-tight">
-                HI~ I am online customer service!
-              </h2>
-              <p className="text-white/50 text-xs mt-1">
-                Contact customer service if you have any questions~
-              </p>
+            {/* Online Badge */}
+            <div
+              className="absolute -bottom-1 left-1/2 -translate-x-1/2
+        bg-black/70 backdrop-blur-md px-2 py-0.5 rounded-full"
+            >
+              <span className="text-[10px] text-green-400 font-bold">
+                Online
+              </span>
             </div>
           </div>
 
-          <motion.button
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0px 0px 25px rgba(99,102,241,0.6)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            animate={{
-              boxShadow: [
-                "0px 0px 10px rgba(99,102,241,0.3)",
-                "0px 0px 25px rgba(99,102,241,0.6)",
-                "0px 0px 10px rgba(99,102,241,0.3)",
-              ],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="w-full py-3 rounded-full font-bold
-  bg-gradient-to-r from-indigo-500 to-purple-600"
-          >
-            Contact Now ⚡
-          </motion.button>
+          {/* Info Text */}
+          <div>
+            <h2 className="font-bold text-lg leading-tight">
+              HI~ I am online customer service!
+            </h2>
+            <p className="text-white/50 text-xs my-3">
+              Contact customer service if you have any questions~
+            </p>
+          </div>
         </div>
-      </div>
+
+        {/* Contact Button */}
+        <motion.button
+          whileHover={{
+            scale: 1.05,
+            boxShadow: "0px 0px 25px rgba(99,102,241,0.6)",
+          }}
+          whileTap={{ scale: 0.95 }}
+          animate={{
+            boxShadow: [
+              "0px 0px 10px rgba(99,102,241,0.3)",
+              "0px 0px 25px rgba(99,102,241,0.6)",
+              "0px 0px 10px rgba(99,102,241,0.3)",
+            ],
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="w-full py-3 rounded-full font-bold
+      bg-gradient-to-r from-indigo-500 to-purple-600 relative z-10"
+        >
+          Contact Now ⚡
+        </motion.button>
+      </GlassCard>
 
       {/* QUICK SERVICES */}
       <div className="mt-8">
