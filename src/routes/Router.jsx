@@ -9,6 +9,7 @@ import Invite from "../pages/Invite/Invite";
 import CustomerServiceCenter from "../pages/Support/CustomerServiceCenter";
 
 import Account from "../pages/Account/Account";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +34,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/invite",
-        element: <Invite />,
+        element: (
+          <PrivateRoute>
+            <Invite />
+          </PrivateRoute>
+        ),
       },
       {
         path: "/support",
@@ -41,7 +46,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/account",
-        element: <Account />,
+        element: (
+          <PrivateRoute>
+            <Account />
+          </PrivateRoute>
+        ),
       },
     ],
   },

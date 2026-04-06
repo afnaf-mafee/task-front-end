@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { ImSpinner2 } from "react-icons/im";
 import { useLoginUserMutation } from "../../redux/services/auth/authApiService";
@@ -12,35 +12,41 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+   const location = useLocation();
   const [loginUser, { isLoading }] = useLoginUserMutation();
-
+  // Get previous page
+const from = location.state?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-const onSubmit = async (data) => {
+  const onSubmit = async (data) => {
     try {
-      const loginData = activeTab === "phone"
-        ? { phone: data.phone, password: data.password }
-        : { email: data.email, password: data.password };
+      const loginData =
+        activeTab === "phone"
+          ? { phone: data.phone, password: data.password }
+          : { email: data.email, password: data.password };
 
       // .unwrap() allows you to use standard try/catch logic with RTK Query
       const res = await loginUser(loginData).unwrap();
-      const user = res?.user
-      
+      const user = res?.user;
+      const token = res?.token;
 
       // 💡 Dispatch to Redux (this also triggers the localStorage save)
-      dispatch(setCredentials({ 
-       user
-      }));
+      dispatch(
+        setCredentials({
+          user,
+          token,
+        }),
+      );
 
       toast.success("Login Success!");
-      // navigate("/dashboard");
-
+      navigate(from, { replace: true });
+      console.log(from);
     } catch (error) {
-      console.error("Login Error:", error);
+      toast.error("Invalid credentials", error);
     }
   };
 
