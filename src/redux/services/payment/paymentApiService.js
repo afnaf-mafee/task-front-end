@@ -1,0 +1,30 @@
+import { baseApi } from "../../api/baseApi";
+
+const paymentApiService = baseApi.injectEndpoints({
+  endpoints: (build) => ({
+
+    // ✅ GET Payments
+    getMethods: build.query({
+        query: () => `/payment-gateway`,
+      providesTags: ["Tasks"], // Cache tag for automatic invalidation
+    }),
+
+    // ✅ ADD PAYMENT (POST)
+    addPayment: build.mutation({
+      query: (paymentData) => ({
+        url: "/add-payment",
+        method: "POST",
+        body: paymentData,
+      }),
+
+      // auto refetch payments list after add
+      invalidatesTags: ["AllPayments"],
+    }),
+
+  }),
+});
+
+export const {
+  useGetMethodsQuery,
+  useAddPaymentMutation,   
+} = paymentApiService;

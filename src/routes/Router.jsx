@@ -11,6 +11,7 @@ import CustomerServiceCenter from "../pages/Support/CustomerServiceCenter";
 import Account from "../pages/Account/Account";
 import PrivateRoute from "./PrivateRoute";
 import Withdraw from "../pages/Withdraw/Withdraw";
+import Deposit from "../pages/Deposit/Deposit";
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Withdraw />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/deposit",
+        element: (
+          <PrivateRoute>
+            <Deposit />
           </PrivateRoute>
         ),
       },

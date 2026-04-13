@@ -4,95 +4,129 @@ import {
   useGetCompletedTasksQuery,
   usePayUserMutation,
 } from "../../../redux/services/task/taskApiServices";
+
 import useAuthData from "../../../hooks/useAuthData";
 import GlassCardV2 from "../../GlassCard/GlassCardV2";
 import GlassCard from "../../GlassCard/GlassCard";
 import img from "../../../assets/icon/newbe.png";
+import { useNavigate } from "react-router-dom";
 
 const Task = () => {
   const { user } = useAuthData();
+  const navigate = useNavigate()
 
-  // Fetch all tasks
+  // =====================================================
+  //  AUTO LEVEL FROM DEPOSIT
+  // =====================================================
+  const getUserLevel = (deposit) => {
+    if (deposit >= 8000) return { level: "Four", days: 10 };
+    if (deposit >= 5001) return { level: "Three", days: 15 };
+    if (deposit >= 3001) return { level: "Two", days: 15 };
+    if (deposit >= 1000) return { level: "One", days: 15 };
+
+    return { level: "Basic", days: 3 };
+  };
+
+  const LEVEL_CONFIG = {
+    Basic: { tasksPerDay: 2, reward: 20 },
+    One: { tasksPerDay: 6, reward: 25 },
+    Two: { tasksPerDay: 8, reward: 32 },
+    Three: { tasksPerDay: 10, reward: 50 },
+    Four: { tasksPerDay: 15, reward: 80 },
+  };
+
+  const depositAmount = user?.depositAmount || 0;
+  // const depositAmount = 2000
+
+  const { level, days } = getUserLevel(depositAmount);
+  const levelSettings = LEVEL_CONFIG[level];
+console.log(level);
+  // =====================================================
+  // FETCH TASKS
+  // =====================================================
   const { data: allTask } = useGetTaskQuery();
   const TASKS_DATA = allTask?.data || [];
 
-  // Fetch completed tasks for the user
-  const { data: completedTasksData } = useGetCompletedTasksQuery(user?.userId);
+  const { data: completedTasksData } =
+    useGetCompletedTasksQuery(user?.userId);
+
   const completedIds =
-    completedTasksData?.completedTasks?.map((t) => t._id?.toString()) || [];
+    completedTasksData?.completedTasks?.map((t) =>
+      t._id?.toString(),
+    ) || [];
 
   const [completeTask] = useCompleteTaskMutation();
   const [payUser] = usePayUserMutation();
 
-  // Bangladesh time logic
-  const tasksPerDay = 2;
-  const totalDays = 3;
-  const now = new Date();
-  const bangladeshOffset = 6 * 60; // UTC+6 in minutes
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  const bangladeshTime = new Date(utc + bangladeshOffset * 60000);
-  const todayBD = bangladeshTime.getDate();
-  const startIndex = ((todayBD - 1) % totalDays) * tasksPerDay;
-  const todayTasks = TASKS_DATA.slice(startIndex, startIndex + tasksPerDay);
+  // =====================================================
+  // PROFESSIONAL TASK DAY SYSTEM (FIXED)
+  // =====================================================
 
-  // Handle task completion
+  const tasksPerDay = levelSettings.tasksPerDay;
+  const totalDays = days;
+
+  const totalCompleted = completedIds.length;
+
+  // calculate current day from completed task
+  const currentDay = Math.floor(
+    totalCompleted / tasksPerDay,
+  );
+
+  const startIndex = currentDay * tasksPerDay;
+
+  const todayTasks = TASKS_DATA.slice(
+    startIndex,
+    startIndex + tasksPerDay,
+  );
+
+  // =====================================================
+  // COMPLETE TASK
+  // =====================================================
   const handleAction = async (task) => {
     if (!user?.userId || !task?._id) return;
-    try {
-      await completeTask({ userId: user.userId, taskId: task._id }).unwrap();
-      // RTK Query invalidates tags automatically, so completedTasksData will refresh
-      // 2️⃣ Pay user $20
-      const res = await payUser({ userId: user.userId, amount: 20 }).unwrap();
 
-      if (res.success) {
-        console.log("🎉 $20 GET successfully!");
-      } else {
-        console.error("Payment failed:", res.message);
-      }
+    try {
+      await completeTask({
+        userId: user.userId,
+        taskId: task._id,
+      }).unwrap();
+
+      await payUser({
+        userId: user.userId,
+        amount: levelSettings.reward,
+      }).unwrap();
+
+      console.log("🎉 Payment Success");
     } catch (err) {
       console.error(err);
     }
   };
-  // Count total completed tasks
-  // const totalCompleted = 6;
 
-  const totalCompleted = completedIds.length;
+  
   return (
     <>
-      {totalCompleted === 6 ? (
-        <>
-          <GlassCard>
-            <div className="space-y-3 text flex flex-col items-center">
-              <img src={img} width={100} className="animate-slow-zoom" />
-              <h4 className="text-white font-urbanist text-center">
-                🎉 Congrats! You've completed 6 tasks. Update your profile &
-                deposit now!
-              </h4>
+      {totalCompleted >= tasksPerDay * totalDays ? (
+        <GlassCard>
+          <div className="space-y-3 flex flex-col items-center">
+            <img src={img} width={100} />
 
-              <button className="cursor-pointer relative z-10 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-white font-black bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 hover:shadow-[0_0_24px_rgba(139,92,246,0.7)] transition-all duration-300 active:scale-95">
-                Deposit Now
-              </button>
-            </div>
-          </GlassCard>{" "}
-        </>
+            <h4 className="text-white text-center">
+              🎉 Target Completed! Deposit Again To Continue
+            </h4>
+
+            <button onClick={() => navigate('/deposit')} className=" cursor-pointer w-full px-4 py-3 rounded-2xl text-white font-black bg-gradient-to-r from-purple-600 to-indigo-600">
+              Deposit Now
+            </button>
+          </div>
+        </GlassCard>
       ) : (
-        <>
-          {" "}
-          <div className="space-y-4">
-            <p
-              className="text-white/80 mb-2"
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                letterSpacing: "1.4px",
-                textTransform: "uppercase",
-              }}
-            >
-              Today's Tasks
-            </p>
+        <div className="space-y-4">
+          <p className="text-white/80 font-bold uppercase text-sm">
+            Today's Tasks — {level} Level
+          </p>
 
-            {todayTasks.map((task) => (
-              <div
+          {todayTasks.map((task) => (
+           <div
                 key={task._id}
                 style={{
                   position: "relative",
@@ -172,39 +206,36 @@ const Task = () => {
                   </button>
                 </div>
               </div>
-            ))}
+          ))}
 
-            <GlassCardV2
-              style={{ display: "flex", alignItems: "center", gap: 8 }}
-            >
-              <span className="text-white/80 font-semibold text-[13px] whitespace-nowrap">
-                Daily Progress:{" "}
-                {
-                  completedIds.filter((id) =>
-                    todayTasks.some((t) => t._id === id),
-                  ).length
-                }
-                /{todayTasks.length}
-              </span>
-              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-[width] duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-                  style={{
-                    width: `${
-                      (completedIds.filter((id) =>
-                        todayTasks.some((t) => t._id === id),
-                      ).length /
-                        todayTasks.length) *
-                      100
-                    }%`,
-                    background: "linear-gradient(90deg,#facc15,#f97316)",
-                  }}
-                />
-              </div>
-              <span style={{ fontSize: 16 }}>⭐</span>
-            </GlassCardV2>
-          </div>{" "}
-        </>
+          {/* Progress */}
+          <GlassCardV2 className="flex items-center gap-3">
+            <span className="text-white text-sm font-semibold">
+              Daily Progress:
+              {
+                completedIds.filter((id) =>
+                  todayTasks.some((t) => t._id === id),
+                ).length
+              }
+              /{todayTasks.length}
+            </span>
+
+            <div className="flex-1 h-2 bg-white/10 rounded-full">
+              <div
+                className="h-full bg-yellow-400 rounded-full"
+                style={{
+                  width: `${
+                    (completedIds.filter((id) =>
+                      todayTasks.some((t) => t._id === id),
+                    ).length /
+                      todayTasks.length) *
+                    100
+                  }%`,
+                }}
+              />
+            </div>
+          </GlassCardV2>
+        </div>
       )}
     </>
   );

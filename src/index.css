@@ -66,3 +66,13 @@
 .animate-slow-zoom {
   animation: slow-zoom 6s ease-in-out infinite;
 }
+
+select option {
+  background-color: #0f172a;
+  color: white;
+}
+
+select option:hover {
+  background-color: #7c3aed; /* purple */
+  color: white;
+}

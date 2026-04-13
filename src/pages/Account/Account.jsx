@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowRight,
   Wallet,
@@ -18,17 +18,24 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/auth/authSlice";
+import { useGetOfferQuery } from "../../redux/services/offer/offerApiServices";
+import { Modal } from "antd";
 
 const Account = () => {
   const { user } = useAuthData();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [openOffer, setOpenOffer] = useState(false);
+  const [accountOffer, setAccountOffer] = useState(null);
   const {
     data: balanceData,
     isLoading,
     isFetching,
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
+  const { data: offer } = useGetOfferQuery();
 
+  const offerData = offer?.data || [];
   const balance = balanceData?.available_balance ?? 0;
   const loading = isLoading || isFetching;
 
@@ -45,7 +52,18 @@ const Account = () => {
       toast.success("User ID copied!");
     }
   };
+  // ✅ Filter Offer For Home
+  useEffect(() => {
+    if (!offerData.length) return;
 
+    const filteredOffer = offerData.find((item) => item.showOn === "Home");
+    console.log(filteredOffer);
+
+    if (filteredOffer) {
+      setAccountOffer(filteredOffer);
+      // setOpenOffer(true);
+    }
+  }, [offerData]);
   return (
     <div className="min-h-screen bg-[#0f0e21] flex justify-center text-white">
       <div className="w-full max-w-md bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035] shadow-2xl rounded-[40px] relative">
@@ -77,6 +95,7 @@ const Account = () => {
           {/* Profile info */}
           <div className="relative z-10 flex items-center gap-4">
             <div className="relative">
+              {/* Avatar */}
               <div className="w-20 h-20 bg-pink-300 rounded-full border-2 border-white overflow-hidden shadow-inner">
                 {loading ? (
                   <Skeleton className="w-full h-full rounded-full" />
@@ -88,10 +107,26 @@ const Account = () => {
                   />
                 )}
               </div>
+
+              {/* Online Dot */}
               {!loading && (
                 <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
               )}
+
+              {/* 🔥 Floating Level Badge */}
+              {!loading && (
+                <div
+                  className="absolute -top-3 -right-3 px-3 py-1 rounded-full 
+    bg-gradient-to-r  via-pink-500 to-purple-600  
+    text-white text-[10px] font-extrabold tracking-wide 
+    shadow-[0_0_12px_rgba(236,72,153,0.8)] 
+    animate-bounce border border-white/30 backdrop-blur-md"
+                >
+                  ⭐ LEVEL 1
+                </div>
+              )}
             </div>
+
             <div>
               <h2 className="text-white font-bold text-lg truncate w-48 tracking-tight">
                 {loading ? (
@@ -105,7 +140,7 @@ const Account = () => {
                 )}
               </h2>
 
-              {/* User ID with copy */}
+              {/* User ID */}
               <div
                 onClick={copyUserId}
                 className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 mt-1 border border-white/20 w-fit cursor-pointer select-none"
@@ -137,13 +172,13 @@ const Account = () => {
                   Account Balance
                 </span>
               </div>
-              <span className="bg-purple-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+              {/* <span className="bg-purple-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
                 LEVEL ONE
-              </span>
+              </span> */}
             </div>
 
-            {/* Balance */}
-            <div className="mb-5 flex items-baseline gap-2">
+            {/* Balance + Withdraw */}
+            <div className="flex justify-between items-center mb-5">
               {loading ? (
                 <Skeleton className="w-32 h-10" />
               ) : (
@@ -151,40 +186,26 @@ const Account = () => {
                   {balance} $
                 </span>
               )}
+
+              <button
+                className="ml-3 px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-500 text-white text-sm font-bold rounded-xl shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300 cursor-pointer"
+                onClick={() => navigate("/withdraw")}
+              >
+                Withdraw
+              </button>
             </div>
 
-            {/* Cash Value & Today */}
-            <div className="flex border-t border-gray-600 pt-4 mb-6">
-              <div className="w-1/2 border-r border-gray-600">
-                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest">
-                  Cash Value
-                </p>
-                <p className="font-extrabold text-white text-xl">
-                  {loading ? (
-                    <Skeleton className="w-12 h-6 inline-block" />
-                  ) : (
-                    "24.4"
-                  )}{" "}
-                  <span className="text-base font-normal">৳</span>
-                </p>
-              </div>
-              <div className="w-1/2 pl-6">
-                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest">
-                  Today
-                </p>
-                <p className="font-extrabold text-purple-500 text-xl">
-                  {loading ? <Skeleton className="w-10 h-6" /> : "+20.00"}
-                </p>
-              </div>
+            {/* Optional Section */}
+            <div className="flex border-t border-gray-600 pt-4">
+              {/* Withdraw Button */}{" "}
+              <button
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                onClick={() => navigate("/deposit")}
+              >
+                {" "}
+                Deposit
+              </button>
             </div>
-
-            {/* Withdraw Button */}
-            <button
-              className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => navigate("/withdraw")}
-            >
-              Withdraw
-            </button>
           </div>
         </div>
 
@@ -277,6 +298,31 @@ const Account = () => {
           </button>
         </div>
       </div>
+
+      {/* ✅ Account Offer Modal */}
+      <Modal
+        open={openOffer}
+        footer={null}
+        centered
+        width={300}
+        onCancel={() => setOpenOffer(false)}
+      >
+        {accountOffer && (
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-2">{accountOffer.title}</h2>
+
+            {accountOffer.image && (
+              <img
+                src={accountOffer.image}
+                alt="offer"
+                className="w-full rounded-lg mb-3"
+              />
+            )}
+
+            <p>{accountOffer.description}</p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
