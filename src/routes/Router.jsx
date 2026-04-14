@@ -12,6 +12,9 @@ import Account from "../pages/Account/Account";
 import PrivateRoute from "./PrivateRoute";
 import Withdraw from "../pages/Withdraw/Withdraw";
 import Deposit from "../pages/Deposit/Deposit";
+import Invoice from "../pages/Invoice/Invoice";
+import Payout from "../pages/Payouts/Payout";
+import OfferPage from "../pages/OfferPage/OfferPage";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +70,29 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Deposit />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/invoice",
+        element: (
+          <PrivateRoute>
+            <Invoice />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/all-withdraw",
+        element: (
+          <PrivateRoute>
+            <Payout />
+          </PrivateRoute>
+        ),
+      },{
+        path: "/offers",
+        element: (
+          <PrivateRoute>
+            <OfferPage/>
           </PrivateRoute>
         ),
       },

@@ -2,7 +2,9 @@ import React from "react";
 import useAuthData from "../../hooks/useAuthData";
 import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService";
 import { useForm } from "react-hook-form";
-
+import { useCreatePayoutRequestMutation } from "../../redux/services/withdraw/withdrawApiService";
+import { ImSpinner2 } from "react-icons/im";
+ import { toast } from "react-hot-toast";
 // Skeleton
 const Skeleton = ({ className }) => (
   <span
@@ -29,9 +31,34 @@ const Withdraw = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Withdraw Data:", data);
-    reset();
+  const [createPayoutRequest, { isLoading: payOutLoading }] =
+    useCreatePayoutRequestMutation();
+
+ 
+
+  const onSubmit = async (formData) => {
+    try {
+      const payload = {
+        userId: user?.userId,
+        wallet: formData.wallet,
+        walletNumber: formData.walletNumber,
+        accountType: formData.accountType,
+        amount: Number(formData.amount),
+      };
+
+      const res = await createPayoutRequest(payload).unwrap();
+
+      // ✅ Success toast
+      toast.success(res?.message || "Payout request created successfully!");
+      reset();
+    } catch (error) {
+      console.log(error);
+
+      // ❌ Error toast
+      toast.error(
+        error?.data?.message || "Something went wrong. Please try again!",
+      );
+    }
   };
 
   return (
@@ -39,7 +66,7 @@ const Withdraw = () => {
       <div className="px-4 relative z-10">
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6 border-l-[6px] border-purple-600">
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex justify-between items-center mb-2">
             <span className="text-gray-200 text-sm font-medium">
               Account Balance
             </span>
@@ -50,11 +77,11 @@ const Withdraw = () => {
           </div>
 
           {/* BALANCE */}
-          <div className="mb-5 flex items-baseline gap-2">
+          <div className="mb-4 flex items-baseline gap-2">
             {loading ? (
               <Skeleton className="w-32 h-10" />
             ) : (
-              <span className="text-5xl font-black text-white">
+              <span className="text-4xl font-black text-purple-500">
                 {balance} $
               </span>
             )}
@@ -62,6 +89,37 @@ const Withdraw = () => {
 
           {/* FORM */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Amount */}
+            <div>
+              <label className="text-white text-sm font-semibold mb-1 block">
+                Amount ($)
+              </label>
+
+              <input
+                type="number"
+                step="0.01"
+                {...register("amount", {
+                  required: "Amount is required",
+                  min: {
+                    value: 1,
+                    message: "Minimum amount is 1$",
+                  },
+                  max: {
+                    value: balance,
+                    message: "Insufficient balance",
+                  },
+                })}
+                placeholder="Enter amount"
+                className="inputGlass w-full h-[45px]"
+              />
+
+              {errors.amount && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.amount.message}
+                </p>
+              )}
+            </div>
+
             {/* Wallet Type */}
             <div>
               <label className="text-white text-sm font-semibold mb-1 block">
@@ -69,7 +127,7 @@ const Withdraw = () => {
               </label>
 
               <select
-                {...register("walletType", {
+                {...register("wallet", {
                   required: "Wallet type required",
                 })}
                 className="inputGlass w-full h-[45px]"
@@ -79,9 +137,9 @@ const Withdraw = () => {
                 <option value="nagad">Nagad</option>
               </select>
 
-              {errors.walletType && (
+              {errors.wallet && (
                 <p className="text-red-400 text-xs mt-1">
-                  {errors.walletType.message}
+                  {errors.wallet.message}
                 </p>
               )}
             </div>
@@ -93,16 +151,16 @@ const Withdraw = () => {
               </label>
 
               <input
-                {...register("number", {
+                {...register("walletNumber", {
                   required: "Number is required",
                 })}
                 placeholder="Enter number"
                 className="inputGlass w-full h-[45px]"
               />
 
-              {errors.number && (
+              {errors.walletNumber && (
                 <p className="text-red-400 text-xs mt-1">
-                  {errors.number.message}
+                  {errors.walletNumber.message}
                 </p>
               )}
             </div>
@@ -122,13 +180,11 @@ const Withdraw = () => {
                 <option value="" className="bg-[#0f172a] text-gray-300">
                   Select Type
                 </option>
-
-                <option value="agent" className="bg-[#0f172a] text-white">
-                  Agent
-                </option>
-
                 <option value="personal" className="bg-[#0f172a] text-white">
                   Personal
+                </option>
+                <option value="agent" className="bg-[#0f172a] text-white">
+                  Agent
                 </option>
               </select>
 
@@ -141,10 +197,13 @@ const Withdraw = () => {
 
             {/* Submit */}
             <button
-              type="submit"
-              className="w-full py-3 rounded-2xl font-bold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all shadow-lg"
+              disabled={payOutLoading}
+              className="w-full py-4  text-white cursor-pointer rounded-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all flex justify-center items-center gap-2 shadow-lg"
             >
-              Withdraw
+              {payOutLoading && (
+                <ImSpinner2 className="animate-spin" size={20} />
+              )}
+              {payOutLoading ? "Processing..." : "Withdraw"}
             </button>
           </form>
         </div>

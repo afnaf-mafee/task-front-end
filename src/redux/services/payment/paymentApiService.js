@@ -20,6 +20,14 @@ const paymentApiService = baseApi.injectEndpoints({
       // auto refetch payments list after add
       invalidatesTags: ["AllPayments"],
     }),
+       // ✅ GET ALL PAYMENTS BY USER ID
+    getAllPayments: build.query({
+      query: (userId) => ({
+        url: `/user-payments?userId=${userId}`,
+        method: "GET",
+      }),
+      providesTags: ["AllPayments"],
+    }),
 
   }),
 });
@@ -27,4 +35,5 @@ const paymentApiService = baseApi.injectEndpoints({
 export const {
   useGetMethodsQuery,
   useAddPaymentMutation,   
+  useGetAllPaymentsQuery
 } = paymentApiService;

@@ -20,6 +20,9 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/auth/authSlice";
 import { useGetOfferQuery } from "../../redux/services/offer/offerApiServices";
 import { Modal } from "antd";
+import { TbCreditCardPay } from "react-icons/tb";
+import { TfiGift } from "react-icons/tfi";
+import { HiOutlineGiftTop } from "react-icons/hi2";
 
 const Account = () => {
   const { user } = useAuthData();
@@ -214,18 +217,23 @@ const Account = () => {
           {[
             {
               icon: <Wallet size={24} className="text-orange-400" />,
-              label: "Invoice",
+              label: "Payments",
               color: "bg-white/5",
+              link: "/invoice",
             },
             {
-              icon: <TrendingUp size={24} className="text-green-400" />,
-              label: "Revenue",
+              icon: <TfiGift size={24} className="text-green-500" />,
+
+              label: "Offers",
               color: "bg-white/5",
+              link: "/offers",
             },
             {
-              icon: <ClipboardList size={24} className="text-red-400" />,
-              label: "Orders",
+              icon: <TbCreditCardPay size={24} className="text-red-400" />,
+
+              label: "Payouts",
               color: "bg-white/5",
+              link: "/all-withdraw",
             },
             {
               icon: <Trophy size={24} className="text-yellow-400" />,
@@ -234,6 +242,7 @@ const Account = () => {
             },
           ].map((item, idx) => (
             <div
+              onClick={() => navigate(item?.link)}
               key={idx}
               className="flex flex-col items-center group cursor-pointer"
             >
