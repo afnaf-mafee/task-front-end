@@ -22,7 +22,7 @@ const Home = () => {
     if (!offerData.length) return;
 
     const filteredOffer = offerData.find((item) => item.showOn === "Home");
-    console.log(filteredOffer);
+   
 
     if (filteredOffer) {
       setHomeOffer(filteredOffer);
