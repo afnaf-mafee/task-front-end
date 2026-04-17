@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { ImSpinner2 } from "react-icons/im";
 import toast from "react-hot-toast";
@@ -13,24 +13,31 @@ const Register = () => {
   const [activeTab, setActiveTab] = useState("phone");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+   const location = useLocation()
+  const query = new URLSearchParams(location.search);
+  const invite = query.get("invite") || "";
   const dispatch = useDispatch();
   const navigate = useNavigate();
+ ;
 
   const [createUser, { isLoading }] = useCreateUserMutation();
-
+const isInviteFromQuery = Boolean(query.get("invite"));
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      invite: invite,
+    },
+  });
 
   const password = watch("password");
 
   const onSubmit = async (data) => {
     try {
-      // Trim email and phone
       if (data.email) data.email = data.email.trim();
       if (data.phone) data.phone = data.phone.trim();
 
@@ -49,8 +56,9 @@ const Register = () => {
       toast.error(err?.data?.message || "Registration Failed");
     }
   };
+
   return (
-    <div className=" flex justify-center items-center font-urbanist text-white ">
+    <div className="flex justify-center items-center font-urbanist text-white">
       <div className="w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 text-center py-10">
@@ -66,7 +74,7 @@ const Register = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2 rounded-lg font-semibold  cursor-pointer transition ${
+                className={`flex-1 py-2 rounded-lg font-semibold cursor-pointer transition ${
                   activeTab === tab
                     ? "bg-purple-600 text-white shadow"
                     : "text-gray-300"
@@ -86,7 +94,7 @@ const Register = () => {
                     required: "Phone required",
                     validate: (value) =>
                       !value.startsWith("+880") ||
-                      "Enter your number like 01712345678. (+88 not allowed)",
+                      "Enter like 01712345678. (+88 not allowed)",
                   })}
                   placeholder="Enter phone number"
                   className="inputGlass"
@@ -99,6 +107,7 @@ const Register = () => {
               <div>
                 <input
                   {...register("email", { required: "Email required" })}
+                  type="email"
                   placeholder="Enter email"
                   className="inputGlass"
                 />
@@ -115,10 +124,7 @@ const Register = () => {
                 placeholder="Create password"
                 {...register("password", {
                   required: "Password required",
-                  minLength: {
-                    value: 6,
-                    message: "Minimum 6 characters",
-                  },
+                  minLength: { value: 6, message: "Minimum 6 characters" },
                 })}
                 className="inputGlass pr-12"
               />
@@ -162,16 +168,34 @@ const Register = () => {
               )}
             </div>
 
-            {/* Invite Code */}
-            <input
-              defaultValue="ID7564E5"
-              {...register("invite")}
-              className="inputGlass text-purple-300 font-bold"
-            />
+            {/* Invite Code (AUTO FILLED) */}
+            <div className="relative">
+              <input
+                {...register("invite")}
+                className="inputGlass text-purple-300 font-bold pr-24"
+                placeholder="Invite code"
+                readOnly={isInviteFromQuery}
+              />
+
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold px-2 py-1 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg animate-pulse">
+                InviteId
+              </span>
+            </div>
 
             {/* Captcha */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl py-3 text-center text-sm">
-              ✔ Captcha Verified
+            <div className="relative overflow-hidden bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-pink-500/20 border border-white/20 rounded-xl py-3 text-center text-sm font-semibold">
+              {/* animated shine overlay */}
+              <div className="absolute inset-0 -translate-x-full animate-[shine_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+              {/* content */}
+              <div className="flex items-center justify-center gap-2 text-white">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+
+                <span className="text-green-300">   <span className="text-green-400 font-bold">✔</span> Captcha Verified  </span>
+              </div>
             </div>
 
             {/* Submit */}

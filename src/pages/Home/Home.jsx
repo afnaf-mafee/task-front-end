@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "antd";
+import { useNavigate } from "react-router-dom";
 
 import BalanceCard from "../../components/HomeComponents/AccountBalance/BalanceCard";
 import GlassCard from "../../components/GlassCard/GlassCard";
@@ -8,8 +9,12 @@ import HomeSlider from "../../components/HomeComponents/HomeSlider/HomeSlider";
 import Task from "../../components/HomeComponents/Task/Task";
 
 import { useGetOfferQuery } from "../../redux/services/offer/offerApiServices";
+import useAuthData from "../../hooks/useAuthData";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const { user } = useAuthData(); // 
+
   const { data: offer } = useGetOfferQuery();
 
   const [openOffer, setOpenOffer] = useState(false);
@@ -17,21 +22,32 @@ const Home = () => {
 
   const offerData = offer?.data || [];
 
-  // ✅ Filter Offer For Home
   useEffect(() => {
     if (!offerData.length) return;
 
-    const filteredOffer = offerData.find((item) => item.showOn === "Home");
-   
+    const filteredOffer = offerData.find(
+      (item) => item.showOn === "Home"
+    );
 
     if (filteredOffer) {
       setHomeOffer(filteredOffer);
-      setOpenOffer(true); // open modal
     }
   }, [offerData]);
 
+  // 🔴 click handler
+  const handleBlockedClick = () => {
+    if (!user) {
+      navigate("/login");
+    }
+  };
+
   return (
-    <div className="px-5">
+    <div className="px-4 relative" onClick={handleBlockedClick}>
+      {/* 🔴 LOGIN BLOCKER OVERLAY */}
+      {!user && (
+        <div className="fixed inset-0 z-50 cursor-pointer" />
+      )}
+
       {/* TopSection */}
       <TopSection />
 
@@ -40,20 +56,21 @@ const Home = () => {
       </GlassCard>
 
       <HomeSlider />
-
       <Task />
 
-      {/* ✅ Offer Modal */}
+      {/* Offer Modal */}
       <Modal
         open={openOffer}
         footer={null}
         centered
-         width={300}  
+        width={300}
         onCancel={() => setOpenOffer(false)}
       >
         {homeOffer && (
-          <div className="text-center ">
-            <h2 className="text-xl font-bold mb-2">{homeOffer.title}</h2>
+          <div className="text-center">
+            <h2 className="text-xl font-bold mb-2">
+              {homeOffer.title}
+            </h2>
 
             {homeOffer.image && (
               <img

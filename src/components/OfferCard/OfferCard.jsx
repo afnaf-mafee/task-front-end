@@ -1,7 +1,7 @@
 import React from "react";
 
 const OfferCard = ({ offer }) => {
-  console.log(offer);
+
   return (
     <div className="w-full flex justify-center items-center p-4">
       <div

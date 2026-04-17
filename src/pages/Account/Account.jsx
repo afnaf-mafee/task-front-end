@@ -16,18 +16,27 @@ import useAuthData from "../../hooks/useAuthData";
 import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/auth/authSlice";
 import { useGetOfferQuery } from "../../redux/services/offer/offerApiServices";
 import { Modal } from "antd";
 import { TbCreditCardPay } from "react-icons/tb";
 import { TfiGift } from "react-icons/tfi";
 import { HiOutlineGiftTop } from "react-icons/hi2";
+import { useGetNotificationsQuery } from "../../redux/services/notification/notificationApiServices";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Account = () => {
   const { user } = useAuthData();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [openNotification, setOpenNotification] = useState(false);
 
   const [openOffer, setOpenOffer] = useState(false);
   const [accountOffer, setAccountOffer] = useState(null);
@@ -37,6 +46,8 @@ const Account = () => {
     isFetching,
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
   const { data: offer } = useGetOfferQuery();
+  const { data: notificationData } = useGetNotificationsQuery(user?.userId);
+  console.log(notificationData);
 
   const offerData = offer?.data || [];
   const balance = balanceData?.available_balance ?? 0;
@@ -47,7 +58,12 @@ const Account = () => {
     dispatch(logout()); // ✅ clear redux + localStorage
     navigate("/login"); // ✅ redirect user
   };
-
+  const filteredNotifications = notificationData?.data?.filter(
+    (item) =>
+      item.userId === "all" ||
+      item.userId === user?.userId ||
+      (Array.isArray(item.userIds) && item.userIds.includes(user?.userId)),
+  );
   // copy userId to clipboard
   const copyUserId = () => {
     if (user?.userId) {
@@ -60,7 +76,7 @@ const Account = () => {
     if (!offerData.length) return;
 
     const filteredOffer = offerData.find((item) => item.showOn === "Home");
-    console.log(filteredOffer);
+    
 
     if (filteredOffer) {
       setAccountOffer(filteredOffer);
@@ -85,12 +101,19 @@ const Account = () => {
               {loading ? <Skeleton className="w-32 h-6" /> : "My Profile"}
             </h1>
             <div className="flex gap-3">
-              <div className="bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/30">
+              <div onClick={() => navigate("/invoice")} className="bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/30">
                 <Clock size={20} />
               </div>
-              <div className="bg-white/20 p-2 rounded-full text-white relative cursor-pointer hover:bg-white/30">
+              <div
+                onClick={() => setOpenNotification(true)}
+                className="bg-white/20 p-2 rounded-full text-white relative cursor-pointer hover:bg-white/30"
+              >
                 <Bell size={20} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-yellow-400 rounded-full border border-white"></span>
+
+                {/* unread notification dot */}
+                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 flex items-center justify-center bg-yellow-400 text-black text-[10px] font-bold rounded-full border border-white shadow-lg animate-pulse font-bold">
+                  {filteredNotifications?.length}
+                </span>
               </div>
             </div>
           </div>
@@ -185,7 +208,7 @@ const Account = () => {
               {loading ? (
                 <Skeleton className="w-32 h-10" />
               ) : (
-                <span className="text-5xl font-black text-white tracking-tighter">
+                <span className="text-3xl font-black text-white tracking-tighter">
                   {balance} $
                 </span>
               )}
@@ -202,7 +225,7 @@ const Account = () => {
             <div className="flex border-t border-gray-600 pt-4">
               {/* Withdraw Button */}{" "}
               <button
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                className="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
                 onClick={() => navigate("/deposit")}
               >
                 {" "}
@@ -331,6 +354,69 @@ const Account = () => {
             <p>{accountOffer.description}</p>
           </div>
         )}
+      </Modal>
+
+      {/* 🔔 Notification Modal */}
+      <Modal
+        open={openNotification}
+        footer={null}
+        centered
+        width={340}
+        onCancel={() => setOpenNotification(false)}
+      >
+        <div className="space-y-3 max-h-[300px] overflow-y-auto">
+          {filteredNotifications ? (
+            filteredNotifications?.map((item) => (
+              <div
+                key={item._id}
+                className="relative rounded-2xl bg-gradient-to-br from-white/5 to-white/10 
+  border border-white/10 backdrop-blur-md shadow-lg  
+ "
+              >
+                {/* Purple accent line */}
+                <div
+                  className="absolute left-0 top-3 bottom-3 w-[4px] rounded-r-full  font-urbanist
+    bg-gradient-to-b from-[#8c20fa] to-[#6135f7]"
+                ></div>
+
+                {/* Content */}
+                <div className="pl-4">
+                  {/* Title */}
+                  <h4 className="font-bold text-purple-900 text-sm flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#8c20fa] animate-pulse"></span>
+                    {item.title}
+                  </h4>
+
+                  {/* Message */}
+                  <p className="text-gray-800  mt-1 leading-relaxed">
+                    {item.message}
+                  </p>
+
+                  {/* Time */}
+                  <div className="mt-2 flex items-center justify-between">
+                    <p className="text-[10px] text-gray-500">
+                      {dayjs(item.createdAt)
+                        .tz("Asia/Dhaka")
+                        .format("DD MMM YYYY • hh:mm A")}
+                    </p>
+
+                    {/* Badge (optional) */}
+                    <span
+                      className="text-[10px] px-2 py-[2px] rounded-full 
+        bg-gradient-to-r from-[#8c20fa] to-[#6135f7] text-white"
+                    >
+                      New
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-400 text-sm">
+              No notifications found
+            </p>
+          )}
+        </div>
       </Modal>
     </div>
   );

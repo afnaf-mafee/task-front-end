@@ -3,10 +3,14 @@ import { Gift, DollarSign, Share2, Copy } from "lucide-react";
 import toast from "react-hot-toast";
 import GlassCard from "../../components/GlassCard/GlassCard";
 import GlassWithOutBorder from "../../components/GlassCard/GlassWithOutBorder";
+import useAuthData from "../../hooks/useAuthData";
 
 const Invite = () => {
-  const referralLink = "https://www.abc.com";
-  const referralCode = "07B08A94";
+
+  const {user} = useAuthData()
+  // const referralLink = `http://www.vistatrust.online/signup?invite=${user?.userId}`;
+  const referralLink = `http://localhost:5173/signup?invite=${user?.userId}`;
+  const referralCode = user?.userId;
 
   // ✅ Copy Function
   const handleCopy = async (text) => {
@@ -21,7 +25,7 @@ const Invite = () => {
   return (
     <div className="min-h-full px-4 py-6 text-white font-urbanist">
       {/* HEADER */}
-      <div className="text-center mb-8">
+      <div className="text-center ">
         <div
           className="w-24 h-24 mx-auto rounded-full
           bg-white/5 backdrop-blur-xl
@@ -42,7 +46,7 @@ const Invite = () => {
       </div>
 
       {/* INVITE EARNING */}
-      <div className="glass-card space-y-5">
+      {/* <div className="glass-card space-y-5">
         <div className="flex items-center gap-2 text-indigo-300 font-semibold">
           <DollarSign size={18} />
           Invitation Earnings
@@ -59,10 +63,10 @@ const Invite = () => {
             <p className="text-xs opacity-70">Stage Reward</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* REFERRAL LINK */}
-      <GlassCard className="mt-6 space-y-5 relative">
+      <GlassCard className="mt-2 relative">
         {/* Title */}
         <div className="flex items-center gap-2 text-indigo-300 font-semibold">
           <Share2 size={18} />
@@ -71,7 +75,7 @@ const Invite = () => {
 
         {/* Referral Link Box */}
         <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded-xl px-3 py-3 relative z-10">
-          <p className="text-xs truncate opacity-70">{referralLink}</p>
+          <p className="text-xs truncate ">{referralLink}</p>
 
           {/* Copy Button */}
           <button

@@ -10,20 +10,41 @@ import GlassCardV2 from "../../GlassCard/GlassCardV2";
 import GlassCard from "../../GlassCard/GlassCard";
 import img from "../../../assets/icon/newbe.png";
 import { useNavigate } from "react-router-dom";
+import { useGetUserBalanceQuery } from "../../../redux/services/auth/authApiService";
 
 const Task = () => {
   const { user } = useAuthData();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const {
+      data: balanceData,
+      isLoading,
+      isFetching,
+    } = useGetUserBalanceQuery(user?.userId, {
+      skip: !user?.userId,
+    });
+  
+  
 
   // =====================================================
-  //  AUTO LEVEL FROM DEPOSIT
+  // 🇧🇩 BANGLADESH TIME FUNCTION
+  // =====================================================
+  const getBDDate = () => {
+    const now = new Date();
+    return new Date(
+      now.toLocaleString("en-US", {
+        timeZone: "Asia/Dhaka",
+      })
+    );
+  };
+
+  // =====================================================
+  // AUTO LEVEL FROM DEPOSIT
   // =====================================================
   const getUserLevel = (deposit) => {
     if (deposit >= 8000) return { level: "Four", days: 10 };
     if (deposit >= 5001) return { level: "Three", days: 15 };
     if (deposit >= 3001) return { level: "Two", days: 15 };
     if (deposit >= 1000) return { level: "One", days: 15 };
-
     return { level: "Basic", days: 3 };
   };
 
@@ -35,12 +56,13 @@ const Task = () => {
     Four: { tasksPerDay: 15, reward: 80 },
   };
 
-  const depositAmount = user?.depositAmount || 0;
-  // const depositAmount = 2000
-
+  const depositAmount = balanceData?.available_balance ?? 0;
+  // const depositAmount = 8000
   const { level, days } = getUserLevel(depositAmount);
   const levelSettings = LEVEL_CONFIG[level];
-console.log(level);
+  
+
+
   // =====================================================
   // FETCH TASKS
   // =====================================================
@@ -52,38 +74,51 @@ console.log(level);
 
   const completedIds =
     completedTasksData?.completedTasks?.map((t) =>
-      t._id?.toString(),
+      t._id?.toString()
     ) || [];
 
   const [completeTask] = useCompleteTaskMutation();
   const [payUser] = usePayUserMutation();
 
   // =====================================================
-  // PROFESSIONAL TASK DAY SYSTEM (FIXED)
+  // ✅ DAILY SYSTEM (BD TIME BASED)
   // =====================================================
-
   const tasksPerDay = levelSettings.tasksPerDay;
   const totalDays = days;
 
-  const totalCompleted = completedIds.length;
+  const bdToday = getBDDate();
 
-  // calculate current day from completed task
+  // user.taskStartDate must be saved after deposit
+  const startDate = user?.taskStartDate
+    ? new Date(user.taskStartDate)
+    : bdToday;
+
+  const diffTime = bdToday - startDate;
+
   const currentDay = Math.floor(
-    totalCompleted / tasksPerDay,
+    diffTime / (1000 * 60 * 60 * 24)
   );
 
   const startIndex = currentDay * tasksPerDay;
 
   const todayTasks = TASKS_DATA.slice(
     startIndex,
-    startIndex + tasksPerDay,
+    startIndex + tasksPerDay
   );
+
+  const totalCompleted = completedIds.length;
 
   // =====================================================
   // COMPLETE TASK
   // =====================================================
   const handleAction = async (task) => {
     if (!user?.userId || !task?._id) return;
+
+    // ❌ Prevent future task completion
+    const allowed = todayTasks.find(
+      (t) => t._id === task._id
+    );
+    if (!allowed) return;
 
     try {
       await completeTask({
@@ -102,6 +137,9 @@ console.log(level);
     }
   };
 
+  // =====================================================
+  // UI
+  // =====================================================
   
   return (
     <>
@@ -114,22 +152,29 @@ console.log(level);
               🎉 Target Completed! Deposit Again To Continue
             </h4>
 
-            <button onClick={() => navigate('/deposit')} className=" cursor-pointer w-full px-4 py-3 rounded-2xl text-white font-black bg-gradient-to-r from-purple-600 to-indigo-600">
+            <button
+              onClick={() => navigate("/deposit")}
+              className="w-full px-4 py-3 rounded-2xl text-white font-black bg-gradient-to-r from-purple-600 to-indigo-600"
+            >
               Deposit Now
             </button>
           </div>
         </GlassCard>
       ) : (
-        <div className="space-y-4">
-          <p className="text-white/80 font-bold uppercase text-sm">
+        <div className="space-y-3 mt-3 font-urbanist">
+          <p className="text-white font-bold uppercase text-sm">
             Today's Tasks — {level} Level
           </p>
 
-          {todayTasks.map((task) => (
-           <div
+          {todayTasks.map((task) => {
+            const isCompleted = completedIds.includes(
+              task._id.toString()
+            );
+
+            return (
+              <div
                 key={task._id}
                 style={{
-                  position: "relative",
                   borderRadius: 18,
                   overflow: "hidden",
                 }}
@@ -142,7 +187,6 @@ console.log(level);
                     display: "flex",
                     alignItems: "center",
                     gap: 12,
-                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.2)",
                   }}
                 >
                   <div
@@ -150,63 +194,45 @@ console.log(level);
                       width: 48,
                       height: 48,
                       borderRadius: 14,
-                      fontSize: 22,
                       background: "rgba(255,255,255,0.18)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      flexShrink: 0,
                     }}
                   >
                     {task.icon}
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <p
-                      style={{
-                        color: "white",
-                        fontWeight: 700,
-                        fontSize: 13,
-                        margin: 0,
-                      }}
-                    >
+                    <p className="text-white font-bold text-sm">
                       {task.title}
                     </p>
-                    <p
-                      style={{
-                        color: "rgba(255,255,255,0.95)",
-                        fontWeight: 800,
-                        fontSize: 20,
-                        margin: "2px 0 0",
-                      }}
-                    >
+                    <p className="text-white font-extrabold text-xl">
                       ${task.reward.toFixed(2)}
                     </p>
                   </div>
 
                   <button
                     onClick={() => handleAction(task)}
-                    disabled={completedIds.includes(task._id)}
+                    disabled={isCompleted}
                     style={{
-                      background: "rgba(255,255,255,0.88)",
-                      border: "none",
+                      background: "rgba(255,255,255,0.9)",
                       borderRadius: 12,
                       padding: "8px 14px",
                       color: "#312e81",
                       fontWeight: 700,
-                      fontSize: 12,
-                      cursor: completedIds.includes(task._id)
+                      cursor: isCompleted
                         ? "default"
                         : "pointer",
-                      opacity: completedIds.includes(task._id) ? 0.5 : 1,
-                      whiteSpace: "nowrap",
+                      opacity: isCompleted ? 0.5 : 1,
                     }}
                   >
-                    {completedIds.includes(task._id) ? "✅ Done" : task.label}
+                    {isCompleted ? "✅ Done" : task.label}
                   </button>
                 </div>
               </div>
-          ))}
+            );
+          })}
 
           {/* Progress */}
           <GlassCardV2 className="flex items-center gap-3">
@@ -214,7 +240,7 @@ console.log(level);
               Daily Progress:
               {
                 completedIds.filter((id) =>
-                  todayTasks.some((t) => t._id === id),
+                  todayTasks.some((t) => t._id === id)
                 ).length
               }
               /{todayTasks.length}
@@ -226,7 +252,7 @@ console.log(level);
                 style={{
                   width: `${
                     (completedIds.filter((id) =>
-                      todayTasks.some((t) => t._id === id),
+                      todayTasks.some((t) => t._id === id)
                     ).length /
                       todayTasks.length) *
                     100

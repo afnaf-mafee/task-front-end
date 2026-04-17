@@ -25,7 +25,7 @@ const HomeSlider = () => {
   }
 
   return (
-    <div className="w-[320px] mx-auto overflow-hidden rounded-md relative">
+    <div className="w-[320px] mx-auto overflow-hidden rounded-md relative mt-4">
       {/* Slider Track */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
