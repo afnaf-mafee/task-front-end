@@ -10,7 +10,7 @@ import { useCreateUserMutation } from "../../redux/services/auth/authApiService"
 import { setCredentials } from "../../redux/features/auth/authSlice";
 
 const Register = () => {
-  const [activeTab, setActiveTab] = useState("phone");
+  const [activeTab, setActiveTab] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
    const location = useLocation()
