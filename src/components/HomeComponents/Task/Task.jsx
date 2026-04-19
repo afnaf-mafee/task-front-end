@@ -14,16 +14,15 @@ import { useGetUserBalanceQuery } from "../../../redux/services/auth/authApiServ
 
 const Task = () => {
   const { user } = useAuthData();
+
   const navigate = useNavigate();
   const {
-      data: balanceData,
-      isLoading,
-      isFetching,
-    } = useGetUserBalanceQuery(user?.userId, {
-      skip: !user?.userId,
-    });
-  
-  
+    data: balanceData,
+    isLoading,
+    isFetching,
+  } = useGetUserBalanceQuery(user?.userId, {
+    skip: !user?.userId,
+  });
 
   // =====================================================
   // 🇧🇩 BANGLADESH TIME FUNCTION
@@ -33,7 +32,7 @@ const Task = () => {
     return new Date(
       now.toLocaleString("en-US", {
         timeZone: "Asia/Dhaka",
-      })
+      }),
     );
   };
 
@@ -60,8 +59,6 @@ const Task = () => {
   // const depositAmount = 8000
   const { level, days } = getUserLevel(depositAmount);
   const levelSettings = LEVEL_CONFIG[level];
-  
-
 
   // =====================================================
   // FETCH TASKS
@@ -69,13 +66,10 @@ const Task = () => {
   const { data: allTask } = useGetTaskQuery();
   const TASKS_DATA = allTask?.data || [];
 
-  const { data: completedTasksData } =
-    useGetCompletedTasksQuery(user?.userId);
+  const { data: completedTasksData } = useGetCompletedTasksQuery(user?.userId);
 
   const completedIds =
-    completedTasksData?.completedTasks?.map((t) =>
-      t._id?.toString()
-    ) || [];
+    completedTasksData?.completedTasks?.map((t) => t._id?.toString()) || [];
 
   const [completeTask] = useCompleteTaskMutation();
   const [payUser] = usePayUserMutation();
@@ -95,29 +89,23 @@ const Task = () => {
 
   const diffTime = bdToday - startDate;
 
-  const currentDay = Math.floor(
-    diffTime / (1000 * 60 * 60 * 24)
-  );
+  const currentDay = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   const startIndex = currentDay * tasksPerDay;
 
-  const todayTasks = TASKS_DATA.slice(
-    startIndex,
-    startIndex + tasksPerDay
-  );
+  const todayTasks = TASKS_DATA.slice(startIndex, startIndex + tasksPerDay);
 
   const totalCompleted = completedIds.length;
 
   // =====================================================
   // COMPLETE TASK
   // =====================================================
+
   const handleAction = async (task) => {
     if (!user?.userId || !task?._id) return;
 
     // ❌ Prevent future task completion
-    const allowed = todayTasks.find(
-      (t) => t._id === task._id
-    );
+    const allowed = todayTasks.find((t) => t._id === task._id);
     if (!allowed) return;
 
     try {
@@ -129,6 +117,7 @@ const Task = () => {
       await payUser({
         userId: user.userId,
         amount: levelSettings.reward,
+        invite : user?.invite
       }).unwrap();
 
       console.log("🎉 Payment Success");
@@ -140,7 +129,7 @@ const Task = () => {
   // =====================================================
   // UI
   // =====================================================
-  
+
   return (
     <>
       {totalCompleted >= tasksPerDay * totalDays ? (
@@ -167,9 +156,7 @@ const Task = () => {
           </p>
 
           {todayTasks.map((task) => {
-            const isCompleted = completedIds.includes(
-              task._id.toString()
-            );
+            const isCompleted = completedIds.includes(task._id.toString());
 
             return (
               <div
@@ -204,9 +191,7 @@ const Task = () => {
                   </div>
 
                   <div style={{ flex: 1 }}>
-                    <p className="text-white font-bold text-sm">
-                      {task.title}
-                    </p>
+                    <p className="text-white font-bold text-sm">{task.title}</p>
                     <p className="text-white font-extrabold text-xl">
                       ${task.reward.toFixed(2)}
                     </p>
@@ -221,9 +206,7 @@ const Task = () => {
                       padding: "8px 14px",
                       color: "#312e81",
                       fontWeight: 700,
-                      cursor: isCompleted
-                        ? "default"
-                        : "pointer",
+                      cursor: isCompleted ? "default" : "pointer",
                       opacity: isCompleted ? 0.5 : 1,
                     }}
                   >
@@ -240,7 +223,7 @@ const Task = () => {
               Daily Progress:
               {
                 completedIds.filter((id) =>
-                  todayTasks.some((t) => t._id === id)
+                  todayTasks.some((t) => t._id === id),
                 ).length
               }
               /{todayTasks.length}
@@ -252,7 +235,7 @@ const Task = () => {
                 style={{
                   width: `${
                     (completedIds.filter((id) =>
-                      todayTasks.some((t) => t._id === id)
+                      todayTasks.some((t) => t._id === id),
                     ).length /
                       todayTasks.length) *
                     100

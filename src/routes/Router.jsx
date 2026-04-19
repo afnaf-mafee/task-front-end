@@ -15,6 +15,7 @@ import Deposit from "../pages/Deposit/Deposit";
 import Invoice from "../pages/Invoice/Invoice";
 import Payout from "../pages/Payouts/Payout";
 import OfferPage from "../pages/OfferPage/OfferPage";
+import TopEarner from "../pages/TopEarner/TopEarner";
 
 export const router = createBrowserRouter([
   {
@@ -88,11 +89,20 @@ export const router = createBrowserRouter([
             <Payout />
           </PrivateRoute>
         ),
-      },{
+      },
+      {
         path: "/offers",
         element: (
           <PrivateRoute>
-            <OfferPage/>
+            <OfferPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/top-ranking",
+        element: (
+          <PrivateRoute>
+            <TopEarner />
           </PrivateRoute>
         ),
       },

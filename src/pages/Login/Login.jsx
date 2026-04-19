@@ -40,10 +40,12 @@ const Login = () => {
         setCredentials({
           user: res.user,
           token: res.token,
-        })
+          invite: res.user?.invite || "",
+        }),
       );
 
       toast.success("Login Success 🚀");
+
       navigate(from, { replace: true });
     } catch (err) {
       toast.error("Invalid credentials");
@@ -54,12 +56,9 @@ const Login = () => {
     <div className=" font-urbanist flex justify-center items-center text-white ">
       {/* Main Card */}
       <div className="w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
-
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
-          <h1 className="text-3xl font-black tracking-tight">
-            Welcome Back
-          </h1>
+          <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
           <p className="text-sm text-gray-200">
             Login to continue your journey
           </p>
@@ -67,7 +66,6 @@ const Login = () => {
 
         {/* Form Section */}
         <div className="p-6 space-y-5">
-
           {/* Tabs */}
           <div className="flex bg-white/5 backdrop-blur-md rounded-xl p-1">
             {["email", "phone"].map((tab) => (
@@ -86,7 +84,6 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
             {/* Email / Phone */}
             {activeTab === "phone" ? (
               <div>
@@ -158,9 +155,7 @@ const Login = () => {
               disabled={isLoading}
               className="w-full py-4 cursor-pointer rounded-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all flex justify-center items-center gap-2 shadow-lg"
             >
-              {isLoading && (
-                <ImSpinner2 className="animate-spin" size={20} />
-              )}
+              {isLoading && <ImSpinner2 className="animate-spin" size={20} />}
               {isLoading ? "Logging in..." : "Login"}
             </button>
           </form>

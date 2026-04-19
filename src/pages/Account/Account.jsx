@@ -47,7 +47,7 @@ const Account = () => {
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
   const { data: offer } = useGetOfferQuery();
   const { data: notificationData } = useGetNotificationsQuery(user?.userId);
-  console.log(notificationData);
+ 
 
   const offerData = offer?.data || [];
   const balance = balanceData?.available_balance ?? 0;
@@ -76,7 +76,6 @@ const Account = () => {
     if (!offerData.length) return;
 
     const filteredOffer = offerData.find((item) => item.showOn === "Home");
-    
 
     if (filteredOffer) {
       setAccountOffer(filteredOffer);
@@ -101,7 +100,10 @@ const Account = () => {
               {loading ? <Skeleton className="w-32 h-6" /> : "My Profile"}
             </h1>
             <div className="flex gap-3">
-              <div onClick={() => navigate("/invoice")} className="bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/30">
+              <div
+                onClick={() => navigate("/invoice")}
+                className="bg-white/20 p-2 rounded-full text-white cursor-pointer hover:bg-white/30"
+              >
                 <Clock size={20} />
               </div>
               <div
@@ -262,6 +264,7 @@ const Account = () => {
               icon: <Trophy size={24} className="text-yellow-400" />,
               label: "Ranking",
               color: "bg-white/5",
+              link: "/top-ranking",
             },
           ].map((item, idx) => (
             <div
@@ -365,34 +368,29 @@ const Account = () => {
         onCancel={() => setOpenNotification(false)}
       >
         <div className="space-y-3 max-h-[300px] overflow-y-auto">
-          {filteredNotifications ? (
-            filteredNotifications?.map((item) => (
+          {filteredNotifications?.length > 0 ? (
+            filteredNotifications.map((item) => (
               <div
                 key={item._id}
                 className="relative rounded-2xl bg-gradient-to-br from-white/5 to-white/10 
-  border border-white/10 backdrop-blur-md shadow-lg  
- "
+          border border-white/10 backdrop-blur-md shadow-lg"
               >
                 {/* Purple accent line */}
                 <div
-                  className="absolute left-0 top-3 bottom-3 w-[4px] rounded-r-full  font-urbanist
-    bg-gradient-to-b from-[#8c20fa] to-[#6135f7]"
-                ></div>
+                  className="absolute left-0 top-3 bottom-3 w-[4px] rounded-r-full
+            bg-gradient-to-b from-[#8c20fa] to-[#6135f7]"
+                />
 
-                {/* Content */}
                 <div className="pl-4">
-                  {/* Title */}
                   <h4 className="font-bold text-purple-900 text-sm flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#8c20fa] animate-pulse"></span>
                     {item.title}
                   </h4>
 
-                  {/* Message */}
-                  <p className="text-gray-800  mt-1 leading-relaxed">
+                  <p className="text-gray-800 mt-1 leading-relaxed">
                     {item.message}
                   </p>
 
-                  {/* Time */}
                   <div className="mt-2 flex items-center justify-between">
                     <p className="text-[10px] text-gray-500">
                       {dayjs(item.createdAt)
@@ -400,10 +398,9 @@ const Account = () => {
                         .format("DD MMM YYYY • hh:mm A")}
                     </p>
 
-                    {/* Badge (optional) */}
                     <span
                       className="text-[10px] px-2 py-[2px] rounded-full 
-        bg-gradient-to-r from-[#8c20fa] to-[#6135f7] text-white"
+                bg-gradient-to-r from-[#8c20fa] to-[#6135f7] text-white"
                     >
                       New
                     </span>
@@ -412,9 +409,23 @@ const Account = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-400 text-sm">
-              No notifications found
-            </p>
+            /* ✅ Empty Notification UI */
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <div
+                className="w-14 h-14 flex items-center justify-center rounded-full 
+        bg-purple-100 text-purple-600 text-2xl"
+              >
+                🔔
+              </div>
+
+              <h3 className="mt-3 font-semibold text-gray-700">
+                No Notifications
+              </h3>
+
+              <p className="text-sm text-gray-400 mt-1">
+                You're all caught up! New notifications will appear here.
+              </p>
+            </div>
           )}
         </div>
       </Modal>

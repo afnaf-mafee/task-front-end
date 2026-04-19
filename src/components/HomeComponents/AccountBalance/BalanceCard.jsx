@@ -20,7 +20,7 @@ const BalanceCard = () => {
     <div
       className=" font-urbanist
       relative flex items-center justify-between
-    
+    -z-50
       overflow-hidden
       group
       "

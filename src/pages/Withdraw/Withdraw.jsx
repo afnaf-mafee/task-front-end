@@ -4,7 +4,7 @@ import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService
 import { useForm } from "react-hook-form";
 import { useCreatePayoutRequestMutation } from "../../redux/services/withdraw/withdrawApiService";
 import { ImSpinner2 } from "react-icons/im";
- import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 // Skeleton
 const Skeleton = ({ className }) => (
   <span
@@ -21,7 +21,11 @@ const Withdraw = () => {
     isFetching,
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
 
-  const balance = balanceData?.available_balance ?? 0;
+  const totalBalance = balanceData?.available_balance ?? 0;
+  const withdrawableBalance = balanceData?.earning_balance ?? 0;
+
+  const bonusBalance = balanceData?.bonus_balance ?? 0;
+
   const loading = isLoading || isFetching;
 
   const {
@@ -34,27 +38,28 @@ const Withdraw = () => {
   const [createPayoutRequest, { isLoading: payOutLoading }] =
     useCreatePayoutRequestMutation();
 
- 
-
   const onSubmit = async (formData) => {
     try {
+      const originalAmount = Number(formData.amount);
+
+      // ✅ 4% deduction
+      const deductedAmount = originalAmount * 0.04;
+      const finalAmount = Math.floor(originalAmount - deductedAmount);
+
       const payload = {
         userId: user?.userId,
         wallet: formData.wallet,
         walletNumber: formData.walletNumber,
-        accountType: formData.accountType,
-        amount: Number(formData.amount),
+        amount: Number(finalAmount.toFixed(2)), // optional rounding
       };
 
       const res = await createPayoutRequest(payload).unwrap();
 
-      // ✅ Success toast
       toast.success(res?.message || "Payout request created successfully!");
       reset();
     } catch (error) {
       console.log(error);
 
-      // ❌ Error toast
       toast.error(
         error?.data?.message || "Something went wrong. Please try again!",
       );
@@ -67,26 +72,75 @@ const Withdraw = () => {
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6 border-l-[6px] border-purple-600">
           {/* HEADER */}
           <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-200 text-sm font-medium">
-              Account Balance
-            </span>
-
             <div className="px-3 py-1 rounded-full bg-gradient-to-r via-pink-500 to-purple-600 text-white text-[10px] font-extrabold animate-bounce">
               ⭐ LEVEL 1
             </div>
           </div>
+          {/* BALANCE CARD */}
+          <div
+            className="bg-white/ backdrop-blur-2xl border border-white/10
+rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
+          >
+            {/* TOTAL BALANCE */}
+            <div className="pb-2 border-b border-white/10">
+              <p className="text-white text-sm tracking-wide">Total Balance</p>
 
-          {/* BALANCE */}
-          <div className="mb-4 flex items-baseline gap-2">
-            {loading ? (
-              <Skeleton className="w-32 h-10" />
-            ) : (
-              <span className="text-4xl font-black text-purple-500">
-                {balance} $
-              </span>
-            )}
+              {loading ? (
+                <Skeleton className="w-40 h-10 mt-2" />
+              ) : (
+                <h2
+                  className="text-3xl font-extrabold
+      bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500
+      bg-clip-text text-transparent drop-shadow-lg"
+                >
+                  ${totalBalance}
+                </h2>
+              )}
+            </div>
+
+            {/* BALANCE GRID */}
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              {/* Withdrawable */}
+              <div
+                className="bg-white/5 rounded-xl p-4 border border-white/10 
+  hover:border-purple-500/40 transition-all duration-300"
+              >
+                <p className="text-xs text-white font-semibold mb-1">
+                  Withdrawable
+                </p>
+
+                {loading ? (
+                  <Skeleton className="w-24 h-6" />
+                ) : (
+                  <p className="text-xl font-bold text-pink-500">
+                    ${withdrawableBalance}
+                  </p>
+                )}
+
+              
+              </div>
+
+              {/* Bonus */}
+              <div
+                className="bg-white/5 rounded-xl p-4 border border-white/10 
+    hover:border-pink-500/40 transition-all duration-300"
+              >
+                <p className="text-xs text-white mb-1">Bonus </p>
+
+                {loading ? (
+                  <Skeleton className="w-24 h-6" />
+                ) : (
+                  <p className="text-xl font-bold text-purple-500">
+                    ${bonusBalance}
+                  </p>
+                )}
+              </div>
+            </div>
+              {/* 🔥 Highlight Note */}
+                <p className="mt-2 text-[11px] font-medium text-center text-yellow-400  bg-yellow-400/10 px-2 py-1 rounded-md ">
+                  ⚠️  • 4% withdrawal fee applies
+                </p>
           </div>
-
           {/* FORM */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Amount */}
@@ -105,7 +159,7 @@ const Withdraw = () => {
                     message: "Minimum amount is 1$",
                   },
                   max: {
-                    value: balance,
+                    value: withdrawableBalance,
                     message: "Insufficient balance",
                   },
                 })}
@@ -166,7 +220,7 @@ const Withdraw = () => {
             </div>
 
             {/* Account Type */}
-            <div>
+            {/* <div>
               <label className="text-white text-sm font-semibold mb-1 block">
                 Account Type
               </label>
@@ -193,7 +247,7 @@ const Withdraw = () => {
                   {errors.accountType.message}
                 </p>
               )}
-            </div>
+            </div> */}
 
             {/* Submit */}
             <button

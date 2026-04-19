@@ -13,15 +13,13 @@ const Register = () => {
   const [activeTab, setActiveTab] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-   const location = useLocation()
+  const location = useLocation();
   const query = new URLSearchParams(location.search);
   const invite = query.get("invite") || "";
   const dispatch = useDispatch();
   const navigate = useNavigate();
- ;
-
   const [createUser, { isLoading }] = useCreateUserMutation();
-const isInviteFromQuery = Boolean(query.get("invite"));
+  const isInviteFromQuery = Boolean(query.get("invite"));
   const {
     register,
     handleSubmit,
@@ -44,7 +42,13 @@ const isInviteFromQuery = Boolean(query.get("invite"));
       const res = await createUser(data).unwrap();
 
       if (res.success) {
-        dispatch(setCredentials({ user: res.user, token: res.token }));
+        dispatch(
+          setCredentials({
+            user: res.user,
+            token: res.token,
+            invite: res?.invite,
+          }),
+        );
 
         toast.success("Account Created Successfully 🚀");
 
@@ -59,7 +63,7 @@ const isInviteFromQuery = Boolean(query.get("invite"));
 
   return (
     <div className="flex justify-center items-center font-urbanist text-white">
-      <div className="w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
+      <div className="w-full rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 text-center py-10">
           <h1 className="text-3xl font-black">Create Account</h1>
@@ -194,7 +198,11 @@ const isInviteFromQuery = Boolean(query.get("invite"));
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                 </span>
 
-                <span className="text-green-300">   <span className="text-green-400 font-bold">✔</span> Captcha Verified  </span>
+                <span className="text-green-300">
+                  {" "}
+                  <span className="text-green-400 font-bold">✔</span> Captcha
+                  Verified{" "}
+                </span>
               </div>
             </div>
 

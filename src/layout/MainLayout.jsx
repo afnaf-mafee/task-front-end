@@ -13,10 +13,11 @@ const MainLayout = () => {
       <div className="absolute bottom-[120px] right-[-30px] w-52 h-52 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* 📱 App Container */}
-      <main className="relative w-[360px] h-screen max-h-[720px] 
-                       rounded-[40px] overflow-hidden flex flex-col
-                       bg-gradient-to-br 
-                       shadow-[0_0_100px_rgba(99,102,241,0.15),0_40px_80px_rgba(0,0,0,0.7)]">
+      <main className="relative w-full max-w-sm min-h-screen 
+                   md:min-h-[720px] md:rounded-[40px]
+                   overflow-hidden flex flex-col
+                   bg-gradient-to-br 
+                   shadow-[0_0_100px_rgba(99,102,241,0.15),0_40px_80px_rgba(0,0,0,0.7)]">
 
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto pb-[100px]">

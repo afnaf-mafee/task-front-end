@@ -16,6 +16,7 @@ const Deposit = () => {
   const [addPayment, { isLoading }] = useAddPaymentMutation();
   const { user } = useAuthData();
   const { data: paymentMethod } = useGetMethodsQuery();
+  
 
   // ✅ STORE RANDOM AGENT SAFELY
   const [paymentAgent, setPaymentAgent] = useState(null);
@@ -31,6 +32,7 @@ const Deposit = () => {
     setPaymentAgent(data[randomIndex]);
 
   }, [paymentMethod?.data, paymentAgent]);
+ 
 
   const {
     register,
@@ -48,7 +50,7 @@ const Deposit = () => {
     const paymentData = {
       transactionId: data.transactionId,
       amount: Number(data.amount),
-      method: paymentAgent?.type || "Bkash",
+      method: paymentAgent?.name ,
       status: "Pending",
       userId: user.userId,
     };

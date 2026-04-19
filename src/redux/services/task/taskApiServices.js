@@ -23,10 +23,10 @@ export const taskApiServices = baseApi.injectEndpoints({
       invalidatesTags: ["Tasks"], // Refresh task list after completion
     }),
     payUser:builder.mutation({
-       query: ({ userId, amount }) => ({
+       query: ({ userId, amount,invite }) => ({
         url: "/tasks/pay-user",
         method: "POST",
-        body: { userId, amount },
+        body: { userId, amount, invite },
       }),
       invalidatesTags: [{ type: "Balance", id: "USER_BALANCE" }]
     })
