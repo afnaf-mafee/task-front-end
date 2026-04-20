@@ -62,8 +62,8 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center font-urbanist text-white w-full min-h-screen">
-      <div className="w-full rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
+    <div className="flex justify-center  font-urbanist text-white w-full min-h-screen bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
+      <div className="w-full rounded-[40px] overflow-hidden shadow-2xl ">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 text-center py-10">
           <h1 className="text-3xl font-black">Create Account</h1>

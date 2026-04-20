@@ -53,7 +53,7 @@ const Login = () => {
   };
 
   return (
-    <div className="font-urbanist text-white w-full min-h-screen bg-white/5 backdrop-blur-xl bg-gradient-to-br via-[#0f172a] to-[#1a1035]">
+    <div className="font-urbanist text-white w-full min-h-screen bg-white/5 backdrop-blur-xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
       <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
         <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
         <p className="text-sm text-gray-200">Login to continue your journey</p>
@@ -79,7 +79,7 @@ const Login = () => {
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4   rounded-md"
+          className="space-y-4   rounded-md "
         >
           {/* Email / Phone */}
           {activeTab === "phone" ? (
