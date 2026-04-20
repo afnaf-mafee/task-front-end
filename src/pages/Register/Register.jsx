@@ -62,7 +62,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex justify-center items-center font-urbanist text-white">
+    <div className="flex justify-center items-center font-urbanist text-white w-full min-h-screen">
       <div className="w-full rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 text-center py-10">

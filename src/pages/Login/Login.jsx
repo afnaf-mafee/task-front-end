@@ -53,7 +53,7 @@ const Login = () => {
   };
 
   return (
-    <div className=" font-urbanist text-white bg-white/5 backdrop-blur-xl  bg-gradient-to-br via-[#0f172a] to-[#1a1035] rounded-b-4xl min-w-[360px] max-w-[4000]">
+    <div className="font-urbanist text-white w-full min-h-screen bg-white/5 backdrop-blur-xl bg-gradient-to-br via-[#0f172a] to-[#1a1035]">
       <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
         <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
         <p className="text-sm text-gray-200">Login to continue your journey</p>
