@@ -20,12 +20,12 @@ const HomeSlider = () => {
 
   if (isLoading) {
     return (
-      <div className="w-[320px] h-[116px] bg-gray-200 animate-pulse rounded-md" />
+      <div className=" h-[116px] bg-gray-200 animate-pulse rounded-md" />
     );
   }
 
   return (
-    <div className="w-[320px] mx-auto overflow-hidden rounded-md relative mt-4">
+    <div className=" mx-auto overflow-hidden rounded-md relative mt-4">
       {/* Slider Track */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
@@ -37,7 +37,7 @@ const HomeSlider = () => {
           <img
             key={index}
             src={img}
-            className="w-[320px] h-[116px] flex-shrink-0 object-cover"
+            className=" h-[116px] flex-shrink-0 object-cover"
             alt={`banner-${index}`}
           />
         ))}

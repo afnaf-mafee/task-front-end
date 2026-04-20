@@ -15,7 +15,7 @@ const MainLayout = () => {
 
       {/* 📱 App Container */}
       <main
-        className="relative w-full sm:w-full min-h-screen 
+        className="relative md:w-[400px] sm:w-full min-h-screen 
                    md:min-h-[720px] md:rounded-[40px]
                    overflow-hidden flex flex-col
                    bg-gradient-to-br 
