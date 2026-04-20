@@ -53,18 +53,14 @@ const Login = () => {
   };
 
   return (
-    <div className=" font-urbanist flex justify-center items-center  text-white ">
-      {/* Main Card */}
-      <div className="  rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
+    <div className=" font-urbanist text-white bg-white/5 backdrop-blur-xl  bg-gradient-to-br via-[#0f172a] to-[#1a1035] rounded-b-4xl">
+    <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
           <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
           <p className="text-sm text-gray-200">
             Login to continue your journey
           </p>
         </div>
 
-        {/* Form Section */}
         <div className="p-6 space-y-5">
           {/* Tabs */}
           <div className="flex bg-white/5 backdrop-blur-md rounded-xl p-1">
@@ -83,7 +79,7 @@ const Login = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4   rounded-md">
             {/* Email / Phone */}
             {activeTab === "phone" ? (
               <div>
@@ -145,9 +141,24 @@ const Login = () => {
               </span>
             </div>
 
-            {/* Glass Captcha */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl py-3 text-center text-sm">
-              ✔ Captcha Verified
+                {/* Captcha */}
+            <div className="relative overflow-hidden bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-pink-500/20 border border-white/20 rounded-xl py-3 text-center text-sm font-semibold">
+              {/* animated shine overlay */}
+              <div className="absolute inset-0 -translate-x-full animate-[shine_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+              {/* content */}
+              <div className="flex items-center justify-center gap-2 text-white">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+
+                <span className="text-green-300">
+                  {" "}
+                  <span className="text-green-400 font-bold">✔</span> Captcha
+                  Verified{" "}
+                </span>
+              </div>
             </div>
 
             {/* Submit Button */}
@@ -168,7 +179,6 @@ const Login = () => {
             </Link>
           </p>
         </div>
-      </div>
     </div>
   );
 };
