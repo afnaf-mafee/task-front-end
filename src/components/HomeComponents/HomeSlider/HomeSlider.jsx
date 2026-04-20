@@ -7,12 +7,13 @@ const HomeSlider = () => {
 
   const slides = bannerData?.data?.map((item) => item.imageUrl) || [];
 
-  // ⏱️ Slower auto slide (change time here)
   useEffect(() => {
     if (slides.length === 0) return;
 
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+      setCurrent((prev) =>
+        prev === slides.length - 1 ? 0 : prev + 1
+      );
     }, 4500);
 
     return () => clearInterval(interval);
@@ -20,12 +21,12 @@ const HomeSlider = () => {
 
   if (isLoading) {
     return (
-      <div className=" h-[116px] bg-gray-200 animate-pulse rounded-md" />
+      <div className="w-full max-w-md h-28 bg-gray-200 animate-pulse rounded-md mx-auto mt-4" />
     );
   }
 
   return (
-    <div className=" mx-auto overflow-hidden rounded-md relative mt-4">
+    <div className="w-full max-w-md mx-auto overflow-hidden rounded-md relative mt-4">
       {/* Slider Track */}
       <div
         className="flex transition-transform duration-700 ease-in-out"
@@ -37,8 +38,8 @@ const HomeSlider = () => {
           <img
             key={index}
             src={img}
-            className=" h-[116px] flex-shrink-0 object-cover"
             alt={`banner-${index}`}
+            className="w-full flex-shrink-0 object-cover aspect-[3/1]"
           />
         ))}
       </div>
@@ -51,7 +52,7 @@ const HomeSlider = () => {
             onClick={() => setCurrent(index)}
             className={`w-2 h-2 rounded-full transition-all duration-300 ${
               current === index
-                ? "bg-purple-500 scale-125" // 🟣 active dot purple
+                ? "bg-purple-500 scale-125"
                 : "bg-purple-200"
             }`}
           />

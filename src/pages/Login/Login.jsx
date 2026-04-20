@@ -53,9 +53,9 @@ const Login = () => {
   };
 
   return (
-    <div className=" font-urbanist flex justify-center items-center text-white ">
+    <div className=" font-urbanist flex justify-center items-center  text-white ">
       {/* Main Card */}
-      <div className="w-full max-w-md rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
+      <div className="  rounded-[40px] overflow-hidden shadow-2xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
           <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
